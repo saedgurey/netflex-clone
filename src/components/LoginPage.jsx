@@ -1,11 +1,13 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from "react-hook-form";
- import {auth} from  "../lib/firebase"
-import {createUserWithEmailAndPassword} from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../lib/firebase';
 
 
-const Signup = () => {
+const LoginPage = () => {
+ const navigate = useNavigate();
+
   const { register,
     handleSubmit, 
     watch, 
@@ -13,16 +15,23 @@ const Signup = () => {
     { errors } } =
      useForm();
 
-  const onSubmit = async (data) =>{
-      try{
-        const {email, password} = data;
-        const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
-     alert("seccessfully registered");
-      }
-      catch (err){
-        console.log(err)
-      }
-  };
+  const onSubmit = async(data) => {
+
+    try{
+      const {email, password} = data;
+      const userCredentials = await signInWithEmailAndPassword(auth, email, password);
+   alert("seccessfully registered");
+    
+  navigate("/browse");
+  }
+    catch (err){
+      console.log(err);
+      alert("usename or password is incorrect");
+    }
+
+     
+
+  }
  
   return (
     <div className='relative flex h-screen w-screen flex-col md:items-center md:justify-center'>
@@ -38,7 +47,7 @@ const Signup = () => {
    <form 
        onSubmit={handleSubmit(onSubmit)}   
        className='relative mt-24 space-y-8 rounded bg-black/70 py-10 px-6 md:mt-0 md:max-w-md md:px-13'>
-         <h1 className='text-white text-2xl font-semibold my-6'>sign up</h1>
+         <h1 className='text-white text-2xl font-semibold my-6'>sign in</h1>
         <lable className="inline-block w-full">
           <input{...register("email", {required : true})} type="email" className='form-control'/>
         {errors.email && <p className='pt-2 text-sm text-orange-500'>this field is required</p>}
@@ -48,16 +57,17 @@ const Signup = () => {
           {errors.password && <p className='pt-2 text-sm text-orange-500'>this field is required</p>}
 
         </lable>
-        <button className='btn'>sign up</button>
+        <button className='btn'>sign in</button>
+
         <div className=' flex gap-x-1'>
-          <p className='text-lg text-[#8d8d8d]'> New to Netflix ?</p>{""}
-          <Link className='hover:underline' to="/Login">
-            sign up
+          <p className='text-lg text-[#8d8d8d]'> have account ?</p>{""}
+          <Link className='hover:underline' to="/sign in">
+            sign in
           </Link>
         </div>
    </form>
     </div>
   )
-}
+  }
 
-export default Signup;
+export default LoginPage;
